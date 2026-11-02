@@ -1,7 +1,13 @@
 import { NextResponse } from "next/server";
-import { supabase } from "@/lib/supabase";
+import { createClient } from "@supabase/supabase-js";
 import * as cheerio from "cheerio";
 import nodemailer from "nodemailer";
+
+// Initialize admin client to bypass RLS for the cron job
+const supabaseAdmin = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.SUPABASE_SERVICE_ROLE_KEY!
+);
 
 const transporter = nodemailer.createTransport({
   service: "gmail",
@@ -12,7 +18,7 @@ const transporter = nodemailer.createTransport({
 });
 
 export async function GET() {
-  const { data: targets, error } = await supabase.from("targets").select("*").eq("is_active", true);
+  const { data: targets, error } = await supabaseAdmin.from("targets").select("*").eq("is_active", true);
   if (error || !targets) return NextResponse.json({ error: "Failed to fetch targets" }, { status: 500 });
 
   const results = [];
@@ -26,7 +32,6 @@ export async function GET() {
       const elementExists = $(target.selector).length > 0;
       const status = elementExists ? "IN_STOCK" : "OUT_OF_STOCK";
 
-      // Send email if the item is detected as in stock
       if (status === "IN_STOCK") {
         await transporter.sendMail({
           from: `"Rewards Watcher" <${process.env.SMTP_EMAIL}>`,
@@ -36,8 +41,8 @@ export async function GET() {
         });
       }
 
-      await supabase.from("audit_logs").insert([{ target_id: target.id, status, message: `Checked at ${new Date().toISOString()}` }]);
-      await supabase.from("targets").update({ last_checked: new Date().toISOString() }).eq("id", target.id);
+      await supabaseAdmin.from("audit_logs").insert([{ target_id: target.id, status, message: `Checked at ${new Date().toISOString()}` }]);
+      await supabaseAdmin.from("targets").update({ last_checked: new Date().toISOString() }).eq("id", target.id);
       
       results.push({ id: target.id, name: target.name, status });
     } catch (err) {
