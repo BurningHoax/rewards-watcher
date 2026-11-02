@@ -3,7 +3,6 @@ import { createClient } from "@supabase/supabase-js";
 import * as cheerio from "cheerio";
 import nodemailer from "nodemailer";
 
-// Initialize admin client to bypass RLS for the cron job
 const supabaseAdmin = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
   process.env.SUPABASE_SERVICE_ROLE_KEY!
@@ -25,7 +24,14 @@ export async function GET() {
 
   for (const target of targets) {
     try {
-      const response = await fetch(target.url, { cache: "no-store" });
+      // Added Cookie and User-Agent headers here to act as your logged-in browser
+      const response = await fetch(target.url, { 
+        cache: "no-store",
+        headers: {
+          "Cookie": process.env.MICROSOFT_COOKIE || "",
+          "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+        }
+      });
       const html = await response.text();
       const $ = cheerio.load(html);
       
