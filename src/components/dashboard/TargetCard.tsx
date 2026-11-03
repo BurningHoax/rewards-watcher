@@ -4,21 +4,21 @@ import { Trash2 } from "lucide-react";
 
 export function TargetCard({ target, onDelete }: { target: Target; onDelete: (id: string) => void }) {
   return (
-    <Card className="relative overflow-hidden">
+    <Card className="relative border-border/70 shadow-sm">
       <CardHeader className="pb-2">
-        <CardTitle className="text-lg truncate pr-8">{target.name}</CardTitle>
-        <button onClick={() => onDelete(target.id)} className="absolute top-4 right-4 text-gray-400 hover:text-red-500">
+        <CardTitle className="truncate pr-8 text-base tracking-tight normal-case">{target.name}</CardTitle>
+        <button aria-label={`Delete ${target.name}`} onClick={() => onDelete(target.id)} className="absolute right-4 top-4 rounded-md p-1 text-muted-foreground transition-colors hover:bg-destructive/10 hover:text-destructive">
           <Trash2 className="h-5 w-5" />
         </button>
       </CardHeader>
       <CardContent>
-        <a href={target.url} target="_blank" rel="noreferrer" className="text-sm text-blue-500 hover:underline block mb-2 truncate">
+        <a href={target.url} target="_blank" rel="noreferrer" className="mb-3 block truncate text-sm text-blue-600 hover:underline dark:text-blue-400">
           View Page
         </a>
-        <div className="text-sm font-mono bg-gray-100 dark:bg-gray-800 p-2 rounded truncate">
+        <div className="truncate rounded-md bg-muted px-3 py-2 font-mono text-xs text-muted-foreground">
           {target.selector}
         </div>
-        <div className="mt-4 flex items-center gap-2 text-sm font-medium">
+        <div className="mt-4 flex items-center gap-2 text-sm font-medium text-muted-foreground">
           <div className={`h-2.5 w-2.5 rounded-full ${target.is_active ? 'bg-green-500' : 'bg-red-500'}`} />
           {target.is_active ? 'Active' : 'Paused'}
         </div>
