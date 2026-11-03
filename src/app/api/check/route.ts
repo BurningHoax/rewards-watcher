@@ -42,7 +42,7 @@ export async function GET() {
         await transporter.sendMail({
           from: `"Rewards Watcher" <${process.env.SMTP_EMAIL}>`,
           to: process.env.ALERT_EMAIL_ADDRESS,
-          subject: `🚨 Restock Alert: ${target.name}`,
+          subject: `Restock Alert: ${target.name}`,
           html: `<p>Your tracked item is back! <a href="${target.url}">Click here to buy it now.</a></p>`
         });
       }
