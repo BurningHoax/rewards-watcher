@@ -1,9 +1,18 @@
-<!-- BEGIN:nextjs-agent-rules -->
+# Agent Context & Instructions
 
-## This is NOT the Next.js you know
+## Project Overview
+**Name:** Universal Web Monitor
+**Goal:** Build a scalable, cloud-based monitoring system that tracks arbitrary webpage changes (inventory, pricing, text) 24/7, independent of the user's device state.
 
-This version has breaking changes — APIs, conventions, and file structure may all differ from your training data. Read the relevant guide in `node_modules/next/dist/docs/` (resolved from this file's directory; in monorepos the `next` package may not be visible from the repo root) before writing any code. Heed deprecation notices.
+## Architecture
+- **Backend/API:** Next.js (Serverless functions for ingestion and API).
+- **Database & Cron:** Supabase (PostgreSQL, Auth, RLS) and Vercel/Supabase Cron Jobs.
+- **Scraping:** Cheerio (for lightweight DOM parsing) via serverless workers.
+- **Client:** Chrome Extension (Manifest V3) acting as the UI for selecting targets.
+- **Notifications:** Resend (Email) and/or Webhooks (Telegram/Discord) for device-agnostic alerts.
 
-This block is written and re-added by `next dev` — verify at `node_modules/next/dist/server/lib/generate-agent-files.js`. Removing it from a diff only re-creates the uncommitted change; committing it with your work keeps the tree clean.
-
-<!-- END:nextjs-agent-rules -->
+## Agent Directives
+1. **Cloud-First:** Always assume the polling engine runs in a serverless environment, not the browser.
+2. **Decoupled Logic:** The Chrome extension is purely for configuration (capturing URLs/Selectors) and viewing status; it does not perform the polling.
+3. **Scalability:** Design database schemas and API routes with multi-tenancy in mind, even if currently testing for a single user.
+4. **Tone Guidelines:** User-facing repository documentation must be strictly professional, completely devoid of emojis, and avoid enthusiastic conversational phrasing.
